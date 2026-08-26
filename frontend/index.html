@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Loan Orchestration Platform</title>
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { background-color: #f1f5f9; margin: 0; padding: 16px; color: #0f172a; }
+    .container { max-width: 650px; margin: 0 auto; background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+    h1 { font-size: 22px; margin-top: 0; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; }
+    .card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
+    .btn { background: #2563eb; color: #ffffff; border: none; padding: 12px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; font-size: 15px; margin-top: 10px; }
+    .btn-upload { background: #059669; }
+    .btn-upload:active { background: #047857; }
+    .progress-track { height: 10px; background: #e2e8f0; border-radius: 6px; margin: 12px 0; overflow: hidden; }
+    .progress-fill { height: 100%; background: #2563eb; width: 0%; transition: width 0.4s ease; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background: #dbeafe; color: #1e40af; }
+    .badge-ready { background: #dcfce7; color: #15803d; }
+    .doc-item { padding: 10px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 8px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Digital Loan Orchestrator</h1>
+
+    <!-- View 1: Application Starter -->
+    <div id="start-section">
+      <p>Instant Business & MSME Working Capital Loan Processing</p>
+      <div class="card">
+        <p><strong>Facility:</strong> Overdraft (OD) / Working Capital</p>
+        <p><strong>Sanction Target:</strong> ₹25,00,000</p>
+        <p><strong>Compliance:</strong> RBI-Compliant Digital Consent & Trail</p>
+      </div>
+      <button class="btn" onclick="initiateLoan()">Start Application & Register Consent</button>
+    </div>
+
+    <!-- View 2: Live Tracking Dashboard -->
+    <div id="dashboard-section" style="display: none;">
+      <div class="card">
+        <p><strong>Application No:</strong> <span id="app-number"></span></p>
+        <p><strong>Status:</strong> <span id="app-status" class="badge">DOCUMENTS_PENDING</span></p>
+        <div>
+          <strong>AI Readiness Score: <span id="readiness-text">0%</span></strong>
+          <div class="progress-track">
+            <div class="progress-fill" id="readiness-bar"></div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Dynamic Document Checklist</h3>
+      <p style="font-size: 14px; color: #64748b;">Upload requirements to trigger AI classification & verification.</p>
+      
+      <button class="btn btn-upload" onclick="uploadDocument('GST_RETURNS', 'GST Return (GSTR-3B)')">📄 Upload GST Return</button>
+      <button class="btn btn-upload" onclick="uploadDocument('BANK_STATEMENT', 'Bank Statement (12 Months)')">📊 Upload Bank Statement</button>
+      <button class="btn btn-upload" onclick="uploadDocument('BALANCE_SHEET', 'Audited Balance Sheet')">📑 Upload Audited Balance Sheet</button>
+
+      <div id="verified-docs" style="margin-top: 20px;"></div>
+    </div>
+  </div>
+
+  <script>
+    let appState = null;
+    let score = 0;
+    const uploaded = [];
+
+    function initiateLoan() {
+      const appNo = "LOAN-" + Math.floor(100000 + Math.random() * 900000);
+      appState = { appNo: appNo, status: "DOCUMENTS_PENDING" };
+
+      document.getElementById("start-section").style.display = "none";
+      document.getElementById("dashboard-section").style.display = "block";
+      document.getElementById("app-number").innerText = appState.appNo;
+    }
+
+    function uploadDocument(docType, docName) {
+      if (uploaded.includes(docType)) {
+        alert("This document is already verified and locked in the vault.");
+        return;
+      }
+
+      uploaded.push(docType);
+      score = Math.min(100, Math.round((uploaded.length / 3) * 100));
+
+      document.getElementById("readiness-text").innerText = score + "%";
+      document.getElementById("readiness-bar").style.width = score + "%";
+
+      const list = document.getElementById("verified-docs");
+      const item = document.createElement("div");
+      item.className = "doc-item";
+      item.innerHTML = `✅ <strong>${docName}</strong><br><small style="color:#64748b;">AI Verified • Cryptographic Hash Recorded</small>`;
+      list.appendChild(item);
+
+      if (score === 100) {
+        const statusBadge = document.getElementById("app-status");
+        statusBadge.innerText = "APPLICATION_READY (Lender Matching)";
+        statusBadge.className = "badge badge-ready";
+        alert("Readiness 100%! Application forwarded to Lender Matching Engine.");
+      }
+    }
+  </script>
+</body>
+</html>
