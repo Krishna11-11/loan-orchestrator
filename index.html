@@ -3,101 +3,309 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digital Loan Orchestration Platform</title>
+  <title>LendOrchestrate — Enterprise Digital Lending Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    body { background-color: #f1f5f9; margin: 0; padding: 16px; color: #0f172a; }
-    .container { max-width: 650px; margin: 0 auto; background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
-    h1 { font-size: 22px; margin-top: 0; color: #1e293b; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; }
-    .card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
-    .btn { background: #2563eb; color: #ffffff; border: none; padding: 12px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; font-size: 15px; margin-top: 10px; }
-    .btn-upload { background: #059669; }
-    .btn-upload:active { background: #047857; }
-    .progress-track { height: 10px; background: #e2e8f0; border-radius: 6px; margin: 12px 0; overflow: hidden; }
-    .progress-fill { height: 100%; background: #2563eb; width: 0%; transition: width 0.4s ease; }
-    .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background: #dbeafe; color: #1e40af; }
-    .badge-ready { background: #dcfce7; color: #15803d; }
-    .doc-item { padding: 10px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; margin-top: 8px; font-size: 14px; }
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .step-active { border-color: #2563eb; color: #2563eb; font-weight: 700; }
+    .step-done { border-color: #16a34a; background-color: #16a34a; color: #ffffff; }
   </style>
 </head>
-<body>
-  <div class="container">
-    <h1>Digital Loan Orchestrator</h1>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
-    <!-- View 1: Application Starter -->
-    <div id="start-section">
-      <p>Instant Business & MSME Working Capital Loan Processing</p>
-      <div class="card">
-        <p><strong>Facility:</strong> Overdraft (OD) / Working Capital</p>
-        <p><strong>Sanction Target:</strong> ₹25,00,000</p>
-        <p><strong>Compliance:</strong> RBI-Compliant Digital Consent & Trail</p>
-      </div>
-      <button class="btn" onclick="initiateLoan()">Start Application & Register Consent</button>
-    </div>
-
-    <!-- View 2: Live Tracking Dashboard -->
-    <div id="dashboard-section" style="display: none;">
-      <div class="card">
-        <p><strong>Application No:</strong> <span id="app-number"></span></p>
-        <p><strong>Status:</strong> <span id="app-status" class="badge">DOCUMENTS_PENDING</span></p>
+  <!-- Header / Navigation -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md shadow-blue-500/20">
+          <i class="fa-solid fa-layer-group"></i>
+        </div>
         <div>
-          <strong>AI Readiness Score: <span id="readiness-text">0%</span></strong>
-          <div class="progress-track">
-            <div class="progress-fill" id="readiness-bar"></div>
+          <span class="text-lg font-bold tracking-tight text-slate-900 block leading-tight">LendOrchestrate</span>
+          <span class="text-[11px] font-semibold text-blue-600 tracking-wider uppercase">Enterprise Loan Engine</span>
+        </div>
+      </div>
+      <div id="app-badge-container" class="hidden sm:flex items-center gap-2">
+        <span class="text-xs bg-slate-100 text-slate-600 px-3 py-1.5 rounded-full font-semibold border border-slate-200" id="header-app-id">APP #LOAN-100245</span>
+        <span class="text-xs bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full font-semibold border border-emerald-200 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Sync
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-6xl mx-auto px-4 py-8">
+
+    <!-- STAGE 0: Application Initiation & Borrower Details -->
+    <section id="view-initiation" class="max-w-xl mx-auto bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50">
+      <div class="text-center mb-6">
+        <span class="text-xs uppercase font-bold tracking-wider bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-200">MSME & Corporate Lending</span>
+        <h2 class="text-2xl font-extrabold text-slate-900 mt-3">Apply for Overdraft & Working Capital</h2>
+        <p class="text-sm text-slate-500 mt-1">One loan application. Complete visibility. Zero repeated submissions.</p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="text-xs font-bold text-slate-700 uppercase">Entity / Business Name</label>
+          <input type="text" id="input-biz-name" value="Apex Global Logistics LLP" class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-bold text-slate-700 uppercase">Constitution</label>
+            <select class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+              <option>LLP / Partnership</option>
+              <option>Private Limited</option>
+              <option>Proprietorship</option>
+            </select>
           </div>
+          <div>
+            <label class="text-xs font-bold text-slate-700 uppercase">Required Facility</label>
+            <select class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none">
+              <option>Overdraft (OD)</option>
+              <option>Working Capital Term</option>
+              <option>Cash Credit (CC)</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-700 uppercase">Requested Sanction Amount</label>
+          <div class="relative mt-1">
+            <span class="absolute left-4 top-3 text-slate-400 font-bold">₹</span>
+            <input type="text" id="input-amount" value="25,00,000" class="w-full pl-8 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" />
+          </div>
+        </div>
+
+        <div class="bg-blue-50/70 border border-blue-100 rounded-xl p-4 text-xs text-slate-600 leading-relaxed">
+          <label class="flex items-start gap-2.5 cursor-pointer">
+            <input type="checkbox" id="consent-check" checked class="mt-0.5 rounded text-blue-600 focus:ring-blue-500" />
+            <span>I authorize <strong>LendOrchestrate</strong> & participating RBI-regulated Banks/NBFCs to fetch credit records, pull GST data, and orchestrate credit underwriting.</span>
+          </label>
+        </div>
+
+        <button onclick="startJourney()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold rounded-xl text-sm shadow-lg shadow-blue-500/25 transition-all">
+          Generate Application & Run Bureau Check →
+        </button>
+      </div>
+    </section>
+
+    <!-- MASTER WORKSPACE (Visible after start) -->
+    <div id="view-workspace" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- LEFT / TOP: 16-Step Journey Master Stepper -->
+      <div class="lg:col-span-4 space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700">Journey Orchestrator</h3>
+            <span id="journey-percent" class="text-xs font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">25%</span>
+          </div>
+
+          <!-- Stepper Item List -->
+          <div class="space-y-3 relative text-xs">
+            <div id="step-1" class="flex items-center gap-3 font-semibold text-emerald-600"><i class="fa-solid fa-circle-check text-base"></i> Application Created</div>
+            <div id="step-2" class="flex items-center gap-3 font-semibold text-emerald-600"><i class="fa-solid fa-circle-check text-base"></i> Digital Consent Logged</div>
+            <div id="step-3" class="flex items-center gap-3 font-semibold text-emerald-600"><i class="fa-solid fa-circle-check text-base"></i> Credit Bureau Score (778)</div>
+            <div id="step-4" class="flex items-center gap-3 font-semibold text-blue-600"><i class="fa-solid fa-spinner animate-spin text-base"></i> Document Collection & AI Check</div>
+            <div id="step-5" class="flex items-center gap-3 text-slate-400"><i class="fa-regular fa-circle text-base"></i> Application Readiness Engine</div>
+            <div id="step-6" class="flex items-center gap-3 text-slate-400"><i class="fa-regular fa-circle text-base"></i> Multi-Lender Match & Routing</div>
+            <div id="step-7" class="flex items-center gap-3 text-slate-400"><i class="fa-regular fa-circle text-base"></i> Sanction Terms Generation</div>
+            <div id="step-8" class="flex items-center gap-3 text-slate-400"><i class="fa-regular fa-circle text-base"></i> eSign & Mohar Stamping Audit</div>
+            <div id="step-9" class="flex items-center gap-3 text-slate-400"><i class="fa-regular fa-circle text-base"></i> Direct Account Disbursement</div>
+            <div id="step-10" class="flex items-center gap-3 text-slate-400"><i class="fa-regular fa-circle text-base"></i> Active Servicing & Vault</div>
+          </div>
+        </div>
+
+        <!-- Bureau Score Card -->
+        <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-5 rounded-2xl text-white shadow-lg">
+          <div class="flex items-center justify-between">
+            <span class="text-xs uppercase font-bold tracking-widest text-slate-400">Bureau Health</span>
+            <span class="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-bold">Excellent</span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="text-3xl font-extrabold text-white">778</span>
+            <span class="text-xs text-slate-400">/ 900 (TransUnion CIBIL)</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-2">Zero DPD in 24 months • Healthy debt-to-income ratio.</p>
         </div>
       </div>
 
-      <h3>Dynamic Document Checklist</h3>
-      <p style="font-size: 14px; color: #64748b;">Upload requirements to trigger AI classification & verification.</p>
-      
-      <button class="btn btn-upload" onclick="uploadDocument('GST_RETURNS', 'GST Return (GSTR-3B)')">📄 Upload GST Return</button>
-      <button class="btn btn-upload" onclick="uploadDocument('BANK_STATEMENT', 'Bank Statement (12 Months)')">📊 Upload Bank Statement</button>
-      <button class="btn btn-upload" onclick="uploadDocument('BALANCE_SHEET', 'Audited Balance Sheet')">📑 Upload Audited Balance Sheet</button>
+      <!-- RIGHT / MAIN: Dynamic Engine Modules -->
+      <div class="lg:col-span-8 space-y-6">
 
-      <div id="verified-docs" style="margin-top: 20px;"></div>
-    </div>
-  </div>
+        <!-- Dynamic Document Checklist & AI Extraction Engine -->
+        <div id="panel-docs" class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">AI Document Ingestion & Verification</h3>
+              <p class="text-xs text-slate-500">Autonomous OCR, data extraction and cross-document validation.</p>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-bold text-slate-500 uppercase">Readiness</span>
+              <div class="text-xl font-extrabold text-blue-600" id="readiness-score-display">0%</div>
+            </div>
+          </div>
 
-  <script>
-    let appState = null;
-    let score = 0;
-    const uploaded = [];
+          <!-- Document Upload Action Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button onclick="simulateUpload('GST')" id="btn-doc-gst" class="p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-500 hover:bg-blue-50/30 text-left transition-all group">
+              <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm mb-2 group-hover:bg-blue-600 group-hover:text-white transition">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+              <div class="text-xs font-bold text-slate-800">GST Returns</div>
+              <div class="text-[10px] text-slate-400">GSTR-3B & 1 (12M)</div>
+            </button>
 
-    function initiateLoan() {
-      const appNo = "LOAN-" + Math.floor(100000 + Math.random() * 900000);
-      appState = { appNo: appNo, status: "DOCUMENTS_PENDING" };
+            <button onclick="simulateUpload('BANK')" id="btn-doc-bank" class="p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-500 hover:bg-blue-50/30 text-left transition-all group">
+              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-sm mb-2 group-hover:bg-emerald-600 group-hover:text-white transition">
+                <i class="fa-solid fa-building-columns"></i>
+              </div>
+              <div class="text-xs font-bold text-slate-800">Bank Statements</div>
+              <div class="text-[10px] text-slate-400">Primary Current A/C</div>
+            </button>
 
-      document.getElementById("start-section").style.display = "none";
-      document.getElementById("dashboard-section").style.display = "block";
-      document.getElementById("app-number").innerText = appState.appNo;
-    }
+            <button onclick="simulateUpload('FINANCIALS')" id="btn-doc-fin" class="p-4 rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-500 hover:bg-blue-50/30 text-left transition-all group">
+              <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-sm mb-2 group-hover:bg-purple-600 group-hover:text-white transition">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+              </div>
+              <div class="text-xs font-bold text-slate-800">Balance Sheet & ITR</div>
+              <div class="text-[10px] text-slate-400">Audited FY 2024-25</div>
+            </button>
+          </div>
 
-    function uploadDocument(docType, docName) {
-      if (uploaded.includes(docType)) {
-        alert("This document is already verified and locked in the vault.");
-        return;
-      }
+          <!-- AI Extraction Output Feeds -->
+          <div id="ai-feed" class="space-y-3 pt-2"></div>
 
-      uploaded.push(docType);
-      score = Math.min(100, Math.round((uploaded.length / 3) * 100));
+          <!-- Lender Match Trigger -->
+          <div id="lender-match-cta" class="hidden p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <div class="text-xs font-bold text-emerald-800 uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-check"></i> Application 100% Ready
+              </div>
+              <p class="text-xs text-emerald-700 mt-0.5">All 3 primary financial indicators match eligible lender credit algorithms.</p>
+            </div>
+            <button onclick="matchLenders()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-md whitespace-nowrap">
+              Run Lender Match Engine →
+            </button>
+          </div>
+        </div>
 
-      document.getElementById("readiness-text").innerText = score + "%";
-      document.getElementById("readiness-bar").style.width = score + "%";
+        <!-- Lender Matching & Sanction Selection Module -->
+        <div id="panel-lenders" class="hidden bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">Multi-Lender Match & Term Sheet</h3>
+            <p class="text-xs text-slate-500">Institutional matchmaking based on requested facility parameters.</p>
+          </div>
 
-      const list = document.getElementById("verified-docs");
-      const item = document.createElement("div");
-      item.className = "doc-item";
-      item.innerHTML = `✅ <strong>${docName}</strong><br><small style="color:#64748b;">AI Verified • Cryptographic Hash Recorded</small>`;
-      list.appendChild(item);
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-5 rounded-2xl border-2 border-blue-600 bg-blue-50/20 relative">
+              <span class="absolute top-3 right-3 text-[10px] font-bold bg-blue-600 text-white px-2 py-0.5 rounded-full">Best Match (98%)</span>
+              <h4 class="font-bold text-slate-900 text-base">HDFC Bank Commercial</h4>
+              <div class="mt-3 space-y-1.5 text-xs text-slate-600">
+                <div class="flex justify-between"><span>Sanction Limit:</span> <strong class="text-slate-900">₹25,00,000</strong></div>
+                <div class="flex justify-between"><span>Interest Rate:</span> <strong class="text-slate-900">9.25% p.a.</strong></div>
+                <div class="flex justify-between"><span>Facility:</span> <strong class="text-slate-900">Overdraft Line</strong></div>
+              </div>
+              <button onclick="selectSanction('HDFC Commercial', 2500000, 9.25)" class="w-full mt-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg shadow-sm">
+                Accept Sanction Terms
+              </button>
+            </div>
 
-      if (score === 100) {
-        const statusBadge = document.getElementById("app-status");
-        statusBadge.innerText = "APPLICATION_READY (Lender Matching)";
-        statusBadge.className = "badge badge-ready";
-        alert("Readiness 100%! Application forwarded to Lender Matching Engine.");
-      }
-    }
-  </script>
-</body>
-</html>
+            <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50">
+              <span class="text-[10px] font-bold bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Match (89%)</span>
+              <h4 class="font-bold text-slate-900 text-base mt-2">ICICI Bank SME</h4>
+              <div class="mt-3 space-y-1.5 text-xs text-slate-600">
+                <div class="flex justify-between"><span>Sanction Limit:</span> <strong class="text-slate-900">₹22,00,000</strong></div>
+                <div class="flex justify-between"><span>Interest Rate:</span> <strong class="text-slate-900">9.60% p.a.</strong></div>
+                <div class="flex justify-between"><span>Facility:</span> <strong class="text-slate-900">Working Capital</strong></div>
+              </div>
+              <button onclick="selectSanction('ICICI SME', 2200000, 9.60)" class="w-full mt-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-lg">
+                Accept Sanction Terms
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transparent Charge Breakdown, eSign & Mohar Stamping -->
+        <div id="panel-esign" class="hidden bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">Transparent Sanction Breakdown & Digital Execution</h3>
+            <p class="text-xs text-slate-500">RBI-aligned complete cost transparency before agreement signing.</p>
+          </div>
+
+          <!-- Fee Table -->
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-3 text-xs">
+            <div class="flex justify-between text-slate-700">
+              <span>Approved Sanction Facility:</span>
+              <strong class="text-slate-900 text-sm">₹25,00,000</strong>
+            </div>
+            <div class="flex justify-between text-rose-600">
+              <span>Processing Fee (1.25% + GST):</span>
+              <strong>- ₹36,875</strong>
+            </div>
+            <div class="flex justify-between text-rose-600">
+              <span>Digital Stamp Duty & Documentation:</span>
+              <strong>- ₹2,500</strong>
+            </div>
+            <div class="flex justify-between text-rose-600">
+              <span>Credit Evaluation & Tech Orchestration:</span>
+              <strong>- ₹1,500</strong>
+            </div>
+            <div class="border-t border-slate-300 pt-3 flex justify-between text-sm">
+              <span class="font-extrabold text-slate-900">Net Expected Disbursement:</span>
+              <strong class="font-extrabold text-emerald-600 text-base">₹24,59,125</strong>
+            </div>
+          </div>
+
+          <!-- eSign & Stamp Actions -->
+          <div class="border border-slate-200 p-5 rounded-xl space-y-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                <i class="fa-solid fa-stamp"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-900 uppercase">Aadhaar eSign & Digital Mohar Stamping</h4>
+                <p class="text-[11px] text-slate-500">UIDAI OTP Verification + Legal Stamp Audit Hash Logged on Ledger.</p>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button onclick="executeEsign()" id="btn-esign" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-2">
+                <i class="fa-solid fa-file-signature"></i> Authenticate Aadhaar eSign & Apply Stamp
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Servicing, Vault & Disbursed View -->
+        <div id="panel-active" class="hidden bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+              <span class="text-xs uppercase font-bold bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full">Facility Active</span>
+              <h3 class="text-xl font-extrabold text-slate-900 mt-2">Active Overdraft Facility</h3>
+              <p class="text-xs text-slate-500">Lender: HDFC Bank Commercial • Account Ref: #OD-9920192</p>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-slate-400 font-bold uppercase">Available Limit</div>
+              <div class="text-2xl font-extrabold text-emerald-600">₹25,00,000</div>
+            </div>
+          </div>
+
+          <!-- Audit Certificate Card -->
+          <div class="p-4 bg-slate-900 text-slate-200 rounded-xl space-y-2 text-xs font-mono">
+            <div class="text-emerald-400 font-bold">✓ CRYPTOGRAPHIC AUDIT CERTIFICATE GENERATED</div>
+            <div>Action: E-SIGN & DIGITAL MOHAR STAMP</div>
+            <div class="truncate text-slate-400">Doc Hash: 8f49a24c5b364e768e1a5f6e80b2a95c7219f8e4c76d1e443b749d214ef5e982</div>
+            <div class="text-slate-400">Timestamp: 27 Aug 2026, 12:45:10 IST</div>
+          </div>
+
+          <!-- Document Lifetime Vault -->
+          <div>
+            <h4 class="text-xs font-bold uppercase text-slate-700 mb-3 tracking-wider">Permanent Document Vault</h4>
+            <div class="space-y-2 text-xs">
+              <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between">
+                <span>📄 Executed_Loan_Agreement_Signed.pdf</span>
+                <span class="font-bold text-blue-600 cursor-pointer">Download Vault Copy</span>
+              </div>
+              <div class="p-3 bg-slat
